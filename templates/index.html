@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company News Tracker — Daily Morning Note</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1>Daily Morning Note</h1>
+                <p class="subtitle">Equity Research Desk &mdash; Company News Tracker</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="input-section">
+                <div class="input-card">
+                    <h2>Generate Report</h2>
+                    <p class="input-help">Enter up to 10 ticker symbols separated by commas.</p>
+                    <form id="ticker-form">
+                        <div class="input-row">
+                            <input
+                                type="text"
+                                id="ticker-input"
+                                placeholder="e.g., AAPL, MSFT, TSLA, NVDA"
+                                autocomplete="off"
+                                spellcheck="false"
+                            />
+                            <button type="submit" id="generate-btn">
+                                <span class="btn-text">Generate Note</span>
+                                <span class="btn-loading" style="display:none;">
+                                    <span class="spinner"></span> Analyzing...
+                                </span>
+                            </button>
+                        </div>
+                        <div class="quick-picks">
+                            <span class="quick-label">Quick:</span>
+                            <button type="button" class="chip" data-tickers="AAPL, MSFT, GOOGL">Big Tech</button>
+                            <button type="button" class="chip" data-tickers="NVDA, AMD, INTC">Semis</button>
+                            <button type="button" class="chip" data-tickers="TSLA, F, GM">Auto</button>
+                            <button type="button" class="chip" data-tickers="JPM, GS, MS">Banks</button>
+                            <button type="button" class="chip" data-tickers="XOM, CVX, COP">Energy</button>
+                            <button type="button" class="chip" data-tickers="JNJ, PFE, UNH">Healthcare</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section id="error-section" class="error-section" style="display:none;">
+                <div class="error-card">
+                    <span class="error-icon">!</span>
+                    <span id="error-message"></span>
+                </div>
+            </section>
+
+            <section id="report-section" class="report-section" style="display:none;">
+                <div class="report-toolbar">
+                    <button id="copy-btn" class="toolbar-btn" title="Copy to clipboard">Copy Markdown</button>
+                    <button id="print-btn" class="toolbar-btn" title="Print report">Print</button>
+                </div>
+                <div id="report-output" class="report-card"></div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>Data sourced from Finnhub, SEC EDGAR, Federal Reserve. For informational purposes only.</p>
+        </footer>
+    </div>
+
+    <script>
+        let rawMarkdown = '';
+
+        document.getElementById('ticker-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('ticker-input').value.trim();
+            if (!input) return;
+
+            const btn = document.getElementById('generate-btn');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoading = btn.querySelector('.btn-loading');
+            const errorSection = document.getElementById('error-section');
+            const reportSection = document.getElementById('report-section');
+
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-flex';
+            errorSection.style.display = 'none';
+            reportSection.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tickers: input }),
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Request failed');
+                }
+
+                rawMarkdown = data.report;
+                document.getElementById('report-output').innerHTML = marked.parse(data.report);
+                reportSection.style.display = 'block';
+                reportSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } catch (err) {
+                document.getElementById('error-message').textContent = err.message;
+                errorSection.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+            }
+        });
+
+        // Quick pick chips
+        document.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.getElementById('ticker-input').value = chip.dataset.tickers;
+            });
+        });
+
+        // Copy markdown
+        document.getElementById('copy-btn').addEventListener('click', () => {
+            navigator.clipboard.writeText(rawMarkdown).then(() => {
+                const btn = document.getElementById('copy-btn');
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = 'Copy Markdown'; }, 2000);
+            });
+        });
+
+        // Print
+        document.getElementById('print-btn').addEventListener('click', () => {
+            window.print();
+        });
+    </script>
+</body>
+</html>

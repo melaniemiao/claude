@@ -1,0 +1,414 @@
+/* Company News Tracker — Professional Financial Theme */
+
+:root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #111827;
+    --bg-card: #1a2332;
+    --bg-card-hover: #1f2b3d;
+    --border: #2a3a4e;
+    --border-accent: #3b82f6;
+    --text-primary: #e8edf5;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-blue: #3b82f6;
+    --accent-green: #22c55e;
+    --accent-red: #ef4444;
+    --accent-amber: #f59e0b;
+    --accent-cyan: #06b6d4;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-sans);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.app-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header */
+.app-header {
+    padding: 40px 0 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+}
+
+.app-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+}
+
+.subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+}
+
+/* Input Section */
+.input-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.input-card h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text-primary);
+}
+
+.input-help {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.input-row {
+    display: flex;
+    gap: 12px;
+}
+
+#ticker-input {
+    flex: 1;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.5px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+#ticker-input:focus {
+    border-color: var(--accent-blue);
+}
+
+#ticker-input::placeholder {
+    color: var(--text-muted);
+}
+
+#generate-btn {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+#generate-btn:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+#generate-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Quick picks */
+.quick-picks {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+}
+
+.quick-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.chip {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-sans);
+}
+
+.chip:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    background: rgba(59, 130, 246, 0.08);
+}
+
+/* Error */
+.error-section {
+    margin-top: 20px;
+}
+
+.error-card {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--accent-red);
+}
+
+.error-icon {
+    width: 24px;
+    height: 24px;
+    background: var(--accent-red);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+/* Report */
+.report-section {
+    margin-top: 32px;
+}
+
+.report-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    justify-content: flex-end;
+}
+
+.toolbar-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-sans);
+}
+
+.toolbar-btn:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+.report-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 32px;
+}
+
+/* Report Markdown Styling */
+.report-card h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--accent-blue);
+}
+
+.report-card h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+    margin-top: 28px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+
+.report-card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-amber);
+    margin-top: 20px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.report-card p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    line-height: 1.7;
+}
+
+.report-card em {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.report-card strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.report-card ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 12px;
+}
+
+.report-card ul li {
+    font-size: 14px;
+    color: var(--text-secondary);
+    padding: 6px 0 6px 16px;
+    position: relative;
+    line-height: 1.6;
+}
+
+.report-card ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 13px;
+    width: 6px;
+    height: 6px;
+    background: var(--accent-blue);
+    border-radius: 50%;
+}
+
+.report-card ul li ul li::before {
+    background: var(--text-muted);
+    width: 4px;
+    height: 4px;
+    top: 14px;
+}
+
+.report-card hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+}
+
+.report-card table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 13px;
+}
+
+.report-card th {
+    background: var(--bg-primary);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.report-card td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+.report-card tr:hover td {
+    background: var(--bg-card-hover);
+}
+
+/* Footer */
+.app-footer {
+    padding: 24px 0;
+    margin-top: 48px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
+
+.app-footer p {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: white;
+        color: #111;
+    }
+    .app-header, .input-section, .report-toolbar, .app-footer, .error-section {
+        display: none;
+    }
+    .report-card {
+        background: white;
+        border: none;
+        padding: 0;
+    }
+    .report-card h1 { color: #111; border-color: #111; }
+    .report-card h2 { color: #1a5276; border-color: #ccc; }
+    .report-card h3 { color: #7d6608; }
+    .report-card p, .report-card li { color: #333; }
+    .report-card strong { color: #111; }
+    .report-card hr { border-color: #ccc; }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .input-row {
+        flex-direction: column;
+    }
+    .report-card {
+        padding: 20px;
+    }
+}
