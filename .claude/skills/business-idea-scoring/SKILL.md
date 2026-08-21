@@ -64,6 +64,25 @@ here, quietly, and the founder deserves to watch it happen rather than be told.
 
 **6. Write the report** in the format below.
 
+**7. Log it to the spreadsheet.** Every scored idea goes into the running workbook —
+including the reshape, and including ideas you scored as part of comparing several. One
+scorecard tells the founder about one idea; eight rows side by side show the pattern, and
+the pattern is usually the more useful finding. Build one record per idea and append:
+
+```bash
+python3 <skill-dir>/scripts/log_idea.py add --file record.json
+python3 <skill-dir>/scripts/verify_workbook.py     # confirms the formulas point where they should
+```
+
+The workbook lands at `idea-log/business-ideas-scored.xlsx` with the JSON records beside
+it in `idea-log/records/`. Pass `--log-dir` to put it elsewhere. See
+`references/spreadsheet-log.md` for the record schema, the sheet layout, and the rules
+about what a rebuild will and won't overwrite.
+
+Write the `why` for all ten criteria — that field is the whole reason the log is worth
+keeping. In three months the score will be meaningless and the sentence behind it won't
+be. If an idea genuinely can't be scored yet, don't log a placeholder; sharpen it first.
+
 ## Weights
 
 | # | Criterion | Weight | Key | Gate |
@@ -194,7 +213,9 @@ When given multiple ideas, score each one and lead with a ranked table (idea, to
 binding constraint) so the comparison is visible at a glance. Then give the full report
 for the top one or two only, and a two-line summary for the rest. Note explicitly when
 two ideas share a binding constraint — that usually means the founder has one problem, not
-several ideas.
+several ideas. Log every variant you scored, not just the winner: the Summary sheet is
+built for exactly this comparison, and a rejected variant is evidence about the founder's
+constraints rather than a dead end worth forgetting.
 
 ## Bundled files
 
@@ -204,3 +225,9 @@ several ideas.
   example. Read before scoring.
 - `scripts/score.py` — weighted total, band, and gate enforcement. Use it instead of
   arithmetic in your head.
+- `references/spreadsheet-log.md` — the log's record schema and sheet layout. Read before
+  logging an idea for the first time in a session.
+- `scripts/log_idea.py` — appends a scored idea and rebuilds the workbook (`add`, `build`,
+  `list`).
+- `scripts/verify_workbook.py` — checks the workbook's formulas reference the right cells
+  and agree with `score.py`. Run it after any `add` or `build`.

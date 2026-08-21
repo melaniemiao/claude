@@ -6,3 +6,6 @@ dist/
 build/
 .venv/
 venv/
+
+# Scoring log workbook is regenerated from idea-log/records/ by log_idea.py
+idea-log/*.xlsx
