@@ -35,7 +35,8 @@ from score import WEIGHTS, evaluate  # noqa: E402
 # LibreOffice cannot evaluate these under any prefix, and post-2007 names need _xlfn.
 BANNED = {"XLOOKUP", "XMATCH", "SORT", "FILTER", "UNIQUE", "SEQUENCE"}
 NEEDS_PREFIX = {"TEXTJOIN", "CONCAT", "IFS", "SWITCH", "MAXIFS", "MINIFS"}
-ALLOWED = {"ROUND", "SUM", "INDEX", "MATCH", "IF", "AND", "OR"}
+ALLOWED = {"ROUND", "SUM", "INDEX", "MATCH", "IF", "AND", "OR",
+           "AVERAGE", "AVERAGEIF", "COUNTIF", "COUNTIFS", "MAX", "SUMPRODUCT"}
 
 problems = []
 
@@ -149,7 +150,7 @@ def main():
         # 4. Summary pulls from the right Scorecard columns for this id.
         check(summary["A%d" % row].value == record["id"],
               "Summary row %d should be id '%s'" % (row, record["id"]))
-        for column, source in (("F", verdict_col), ("G", total_col), ("H", gate_col)):
+        for column, source in (("G", verdict_col), ("H", total_col), ("I", gate_col)):
             formula = summary["%s%d" % (column, row)].value or ""
             check("Scorecard!$%s:$%s" % (source, source) in formula
                   and "MATCH($A%d,Scorecard!$A:$A,0)" % row in formula,

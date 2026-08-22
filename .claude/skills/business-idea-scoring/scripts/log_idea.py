@@ -91,8 +91,8 @@ GBP = '£#,##0;(£#,##0);-'
 
 # (sheet, column letter, field) that a human fills in and a rebuild must not clobber.
 USER_COLUMNS = [
-    ("Summary", "E", "status"),
-    ("Summary", "O", "next_action"),
+    ("Summary", "F", "status"),
+    ("Summary", "P", "next_action"),
     ("Detail", "N", "test_result"),
     ("Detail", "O", "test_date"),
     ("Detail", "T", "notes"),
@@ -370,10 +370,10 @@ def build_summary(book, records, kept):
     title(sheet, "Business ideas - scoring log",
           "One row per idea, newest last. Scores and bands are pulled live from the "
           "Scorecard sheet. Status and Next action are yours to fill in.")
-    headers = ["ID", "Date scored", "Idea", "Variant of", "Status", "VERDICT", "Total /100",
-               "Gate", "Binding constraint", "Best case yr1", "Realistic yr1",
+    headers = ["ID", "Date scored", "Idea", "Cluster", "Variant of", "Status", "VERDICT",
+               "Total /100", "Gate", "Binding constraint", "Best case yr1", "Realistic yr1",
                "Capital needed", "Months to £1", "One-line verdict", "Next action"]
-    widths = [18, 12, 34, 16, 12, 17, 10, 8, 20, 14, 14, 14, 11, 52, 30]
+    widths = [26, 11, 40, 22, 16, 12, 17, 10, 8, 20, 13, 13, 13, 10, 52, 30]
     style_header(sheet, 3, headers, widths, wrap_from=3)
 
     last = 2 + len(CRITERIA) * 3
@@ -391,31 +391,32 @@ def build_summary(book, records, kept):
         sheet.cell(row=row, column=2, value=record.get("date", "")).font = BLACK
         sheet.cell(row=row, column=3, value=record["idea"]).font = Font(
             name=ARIAL, size=10, bold=True)
-        sheet.cell(row=row, column=4, value=record.get("variant_of", "")).font = BLACK
-        status = sheet.cell(row=row, column=5, value=manual.get("status", "Scored"))
+        sheet.cell(row=row, column=4, value=record.get("cluster", "")).font = BLACK
+        sheet.cell(row=row, column=5, value=record.get("variant_of", "")).font = BLACK
+        status = sheet.cell(row=row, column=6, value=manual.get("status", "Scored"))
         status.font = BLUE
         status.fill = INPUT_FILL
 
         for index, field in enumerate(["verdict", "total", "gate", "constraint"]):
-            cell = sheet.cell(row=row, column=6 + index)
+            cell = sheet.cell(row=row, column=7 + index)
             cell.value = "=INDEX(Scorecard!${0}:${0},MATCH($A{1},Scorecard!$A:$A,0))".format(
                 columns[field], row)
             cell.font = Font(name=ARIAL, size=10, bold=field in ("verdict", "total"))
             cell.alignment = Alignment(horizontal="center")
-        sheet.cell(row=row, column=7).number_format = "0.0"
+        sheet.cell(row=row, column=8).number_format = "0.0"
 
         for index, field in enumerate(["best_case_yr1", "realistic_yr1", "capital_required"]):
-            cell = sheet.cell(row=row, column=10 + index, value=record.get(field))
+            cell = sheet.cell(row=row, column=11 + index, value=record.get(field))
             cell.number_format = GBP
             cell.font = BLACK
-        months = sheet.cell(row=row, column=13, value=record.get("months_to_revenue"))
+        months = sheet.cell(row=row, column=14, value=record.get("months_to_revenue"))
         months.number_format = "0"
         months.font = BLACK
 
-        verdict_text = sheet.cell(row=row, column=14, value=record.get("verdict", ""))
+        verdict_text = sheet.cell(row=row, column=15, value=record.get("verdict", ""))
         verdict_text.font = Font(name=ARIAL, size=9)
         verdict_text.alignment = Alignment(wrap_text=True, vertical="top")
-        action = sheet.cell(row=row, column=15, value=manual.get("next_action", ""))
+        action = sheet.cell(row=row, column=16, value=manual.get("next_action", ""))
         action.font = BLUE
         action.fill = INPUT_FILL
         action.alignment = Alignment(wrap_text=True, vertical="top")
@@ -426,9 +427,9 @@ def build_summary(book, records, kept):
         validation = DataValidation(type="list", formula1='"%s"' % ",".join(STATUSES),
                                     allow_blank=True, showDropDown=False)
         sheet.add_data_validation(validation)
-        validation.add("E%d:E%d" % (DATA_ROW, end))
+        validation.add("F%d:F%d" % (DATA_ROW, end))
         sheet.conditional_formatting.add(
-            "G%d:G%d" % (DATA_ROW, end),
+            "H%d:H%d" % (DATA_ROW, end),
             ColorScaleRule(start_type="num", start_value=35, start_color="F8696B",
                            mid_type="num", mid_value=62, mid_color="FFEB84",
                            end_type="num", end_value=85, end_color="63BE7B"))
@@ -480,6 +481,118 @@ def build_detail(book, records, kept):
     return sheet
 
 
+def build_analysis(book, records):
+    """Aggregates. With a handful of ideas this sheet is noise; with fifty it is the
+    point - it shows which criterion is systematically dragging the founder's ideas
+    down, and which of her assets generates ideas that actually clear the bar."""
+    sheet = book.create_sheet("Analysis")
+    title(sheet, "Analysis - what the whole set says",
+          "Every figure here is a formula over the other sheets, so it moves when a "
+          "score or a weight changes.")
+    if not records:
+        return sheet
+    end = DATA_ROW + len(records) - 1
+    score_cols = [get_column_letter(3 + i * 3) for i in range(len(CRITERIA))]
+
+    def header(row, labels, widths=None):
+        for index, label in enumerate(labels, start=1):
+            cell = sheet.cell(row=row, column=index, value=label)
+            cell.font = HEAD_FONT
+            cell.fill = HEAD_FILL
+            cell.alignment = Alignment(wrap_text=True, vertical="center")
+            cell.border = BOX
+
+    sheet.cell(row=4, column=1, value="Ideas scored").font = Font(name=ARIAL, size=10, bold=True)
+    sheet.cell(row=4, column=2, value=len(records)).font = BLACK
+    sheet.cell(row=5, column=1, value="Gates fired").font = Font(name=ARIAL, size=10, bold=True)
+    sheet.cell(row=5, column=2,
+               value='=COUNTIF(Summary!$I$%d:$I$%d,"YES")' % (DATA_ROW, end)).font = BLACK
+    sheet.cell(row=6, column=1, value="Mean total").font = Font(name=ARIAL, size=10, bold=True)
+    mean = sheet.cell(row=6, column=2,
+                      value="=ROUND(AVERAGE(Summary!$H$%d:$H$%d),1)" % (DATA_ROW, end))
+    mean.number_format = "0.0"
+    sheet.cell(row=6, column=3,
+               value="Calibration: a typical decent idea lands 50-65. A mean above 70 means "
+                     "the scoring has drifted.").font = Font(
+        name=ARIAL, size=9, italic=True, color="595959")
+
+    header(9, ["Verdict", "Ideas"])
+    verdicts = [name for _, name in reversed(BANDS)] + ["%s (capped)" % CAP_BAND]
+    for offset, name in enumerate(verdicts):
+        row = 10 + offset
+        sheet.cell(row=row, column=1, value=name).font = BLACK
+        cell = sheet.cell(row=row, column=2,
+                          value='=COUNTIF(Summary!$G$%d:$G$%d,"%s")' % (DATA_ROW, end, name))
+        cell.font = BLACK
+        cell.border = BOX
+
+    start = 10 + len(verdicts) + 2
+    header(start, ["Criterion", "Mean /5", "Ideas scoring <=2", "Weight"])
+    sheet.cell(row=start - 1, column=1,
+               value="Which criterion keeps costing you points - the pattern the log exists "
+                     "to surface.").font = Font(name=ARIAL, size=9, italic=True, color="595959")
+    for index, (key, label, weight, _) in enumerate(CRITERIA):
+        row = start + 1 + index
+        column = score_cols[index]
+        sheet.cell(row=row, column=1, value=label).font = BLACK
+        mean_cell = sheet.cell(row=row, column=2,
+                               value="=ROUND(AVERAGE(Scorecard!$%s$%d:$%s$%d),2)"
+                                     % (column, DATA_ROW, column, end))
+        mean_cell.number_format = "0.00"
+        mean_cell.font = BLACK
+        sheet.cell(row=row, column=3,
+                   value='=COUNTIF(Scorecard!$%s$%d:$%s$%d,"<=2")'
+                         % (column, DATA_ROW, column, end)).font = BLACK
+        sheet.cell(row=row, column=4, value=weight).font = Font(
+            name=ARIAL, size=9, color="595959")
+        for col in range(1, 5):
+            sheet.cell(row=row, column=col).border = BOX
+
+    clusters = []
+    for record in records:
+        name = record.get("cluster", "")
+        if name and name not in clusters:
+            clusters.append(name)
+    if clusters:
+        start = start + len(CRITERIA) + 3
+        header(start, ["Cluster", "Ideas", "Mean total", "Best", "Strong or better"])
+        sheet.cell(row=start - 1, column=1,
+                   value="Which of your assets actually generates ideas that clear the "
+                         "bar.").font = Font(name=ARIAL, size=9, italic=True, color="595959")
+        for index, name in enumerate(sorted(clusters)):
+            row = start + 1 + index
+            safe = name.replace('"', "'")
+            sheet.cell(row=row, column=1, value=name).font = BLACK
+            sheet.cell(row=row, column=2,
+                       value='=COUNTIF(Summary!$D$%d:$D$%d,"%s")'
+                             % (DATA_ROW, end, safe)).font = BLACK
+            avg = sheet.cell(row=row, column=3,
+                             value='=ROUND(AVERAGEIF(Summary!$D$%d:$D$%d,"%s",'
+                                   'Summary!$H$%d:$H$%d),1)'
+                                   % (DATA_ROW, end, safe, DATA_ROW, end))
+            avg.number_format = "0.0"
+            avg.font = BLACK
+            # SUMPRODUCT(MAX(...)) rather than MAX(IF(...)): the latter is an array
+            # formula needing Ctrl+Shift+Enter, which openpyxl cannot mark, so it would
+            # silently return the wrong value.
+            best = sheet.cell(row=row, column=4,
+                              value='=ROUND(SUMPRODUCT(MAX((Summary!$D$%d:$D$%d="%s")*'
+                                    'Summary!$H$%d:$H$%d)),1)'
+                                    % (DATA_ROW, end, safe, DATA_ROW, end))
+            best.number_format = "0.0"
+            best.font = BLACK
+            sheet.cell(row=row, column=5,
+                       value='=COUNTIFS(Summary!$D$%d:$D$%d,"%s",Summary!$H$%d:$H$%d,">=%d")'
+                             % (DATA_ROW, end, safe, DATA_ROW, end,
+                                [f for f, n in BANDS if n == "Strong"][0])).font = BLACK
+            for col in range(1, 6):
+                sheet.cell(row=row, column=col).border = BOX
+
+    for column, width in zip("ABCDE", [34, 12, 14, 12, 18]):
+        sheet.column_dimensions[column].width = width
+    return sheet
+
+
 def build(log_dir):
     records = load_records(log_dir)
     path = workbook_path(log_dir)
@@ -490,6 +603,7 @@ def build(log_dir):
     build_summary(book, records, kept)
     build_scorecard(book, records)
     build_detail(book, records, kept)
+    build_analysis(book, records)
     build_weights(book)
 
     os.makedirs(log_dir, exist_ok=True)
