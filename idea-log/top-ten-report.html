@@ -1,0 +1,896 @@
+<title>Ten Ideas Worth Testing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap">
+<style>
+:root {
+  --ground:#EFF2F4; --surface:#FCFDFD; --surface-2:#F5F8FA;
+  --ink:#0E1E2B; --ink-soft:#4F6070; --ink-faint:#7C8B99;
+  --rule:#D3DBE2; --rule-soft:#E4EAEF;
+  --accent:#0B5FA8; --accent-wash:#E1EAF3;
+  --signal:#A6631A; --signal-wash:#F4EADC;
+  --shadow:0 1px 2px rgba(14,30,43,.05), 0 8px 24px -16px rgba(14,30,43,.22);
+  --measure:66ch;
+  --f-display:"Newsreader",Georgia,"Times New Roman",serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:#0B1218; --surface:#111A21; --surface-2:#16212A;
+    --ink:#DFE8EE; --ink-soft:#94A5B3; --ink-faint:#6D7E8C;
+    --rule:#22303B; --rule-soft:#1B262F;
+    --accent:#3A8ACB; --accent-wash:#152735;
+    --signal:#BE8526; --signal-wash:#2A2015;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"] {
+  --ground:#0B1218; --surface:#111A21; --surface-2:#16212A;
+  --ink:#DFE8EE; --ink-soft:#94A5B3; --ink-faint:#6D7E8C;
+  --rule:#22303B; --rule-soft:#1B262F;
+  --accent:#3A8ACB; --accent-wash:#152735;
+  --signal:#BE8526; --signal-wash:#2A2015;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+
+*, *::before, *::after { box-sizing:border-box; }
+body {
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--f-body); font-size:16px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap { max-width:1120px; margin:0 auto; padding:0 24px 96px; }
+h1,h2,h3,h4 { font-family:var(--f-display); font-weight:500; text-wrap:balance; margin:0; }
+p { margin:0; }
+a { color:var(--accent); }
+:focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:2px; }
+
+/* ---------- masthead ---------- */
+.mast {
+  border-bottom:1px solid var(--rule); padding:56px 0 32px; margin-bottom:40px;
+  position:relative; overflow:hidden;
+}
+.mast::before {
+  content:""; position:absolute; inset:0; pointer-events:none; opacity:.5;
+  background-image:linear-gradient(var(--rule-soft) 1px, transparent 1px),
+                   linear-gradient(90deg, var(--rule-soft) 1px, transparent 1px);
+  background-size:28px 28px;
+  -webkit-mask-image:linear-gradient(180deg, rgba(0,0,0,.55), transparent 78%);
+  mask-image:linear-gradient(180deg, rgba(0,0,0,.55), transparent 78%);
+}
+.mast > * { position:relative; }
+.eyebrow {
+  font-family:var(--f-mono); font-size:11.5px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-faint); margin-bottom:18px;
+}
+.mast h1 { font-size:clamp(2.6rem,6vw,4.1rem); line-height:1.02; letter-spacing:-.02em; }
+.standfirst {
+  max-width:var(--measure); margin-top:20px; font-size:1.115rem;
+  color:var(--ink-soft); line-height:1.62;
+}
+.standfirst strong { color:var(--ink); font-weight:500; }
+
+.stats {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px; background:var(--rule); border:1px solid var(--rule);
+  margin-top:36px; border-radius:3px; overflow:hidden;
+}
+.stat { background:var(--surface); padding:16px 18px; }
+.stat b {
+  display:block; font-family:var(--f-mono); font-size:1.5rem; font-weight:500;
+  letter-spacing:-.02em; font-variant-numeric:tabular-nums;
+}
+.stat span { display:block; font-size:12.5px; color:var(--ink-faint); margin-top:3px; }
+
+/* ---------- prose sections ---------- */
+section.band { margin:56px 0; }
+section.band > h2 {
+  font-size:1.62rem; letter-spacing:-.01em; padding-bottom:10px;
+  border-bottom:1px solid var(--rule); margin-bottom:22px;
+}
+.prose { max-width:var(--measure); display:flex; flex-direction:column; gap:14px; color:var(--ink-soft); }
+.prose strong { color:var(--ink); font-weight:500; }
+.prose em { font-style:italic; color:var(--ink); }
+
+.keys { display:grid; grid-template-columns:repeat(auto-fit,minmax(232px,1fr)); gap:14px; margin-top:8px; }
+.key { background:var(--surface); border:1px solid var(--rule); border-radius:3px; padding:15px 17px; }
+.key h4 { font-size:1rem; margin-bottom:5px; }
+.key p { font-size:14px; color:var(--ink-soft); line-height:1.55; }
+
+/* ---------- ranked table ---------- */
+.tscroll { overflow-x:auto; border:1px solid var(--rule); border-radius:3px; background:var(--surface); }
+table { border-collapse:collapse; width:100%; min-width:720px; }
+thead th {
+  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--ink-faint); font-weight:500; text-align:left; padding:11px 14px;
+  border-bottom:1px solid var(--rule); white-space:nowrap; background:var(--surface-2);
+}
+tbody td { padding:11px 14px; border-bottom:1px solid var(--rule-soft); vertical-align:middle; font-size:14.5px; }
+tbody tr:last-child td { border-bottom:0; }
+td.r { font-family:var(--f-mono); color:var(--ink-faint); font-size:12.5px; width:34px; }
+td a { text-decoration:none; font-weight:500; color:var(--ink); }
+td a:hover { color:var(--accent); text-decoration:underline; }
+.t-cluster { display:block; font-size:11.5px; color:var(--ink-faint); font-family:var(--f-mono); margin-top:2px; }
+td.c { color:var(--ink-soft); font-size:13.5px; white-space:nowrap; }
+td.n { text-align:right; }
+.mono { font-family:var(--f-mono); font-variant-numeric:tabular-nums; font-size:13.5px; }
+.tbar { display:flex; align-items:center; gap:9px; justify-content:flex-end; }
+.tbar-fill { height:7px; background:var(--accent); border-radius:0 3px 3px 0; min-width:2px; max-width:120px; flex:0 0 auto; }
+.tbar span { font-family:var(--f-mono); font-variant-numeric:tabular-nums; font-weight:500; width:38px; text-align:right; }
+
+/* ---------- notes ---------- */
+.note {
+  background:var(--surface); border:1px solid var(--rule); border-radius:4px;
+  margin-bottom:26px; box-shadow:var(--shadow); scroll-margin-top:20px;
+}
+.note-head {
+  display:grid; grid-template-columns:auto 1fr auto; gap:20px; align-items:start;
+  padding:22px 24px; border-bottom:1px solid var(--rule); background:var(--surface-2);
+  border-radius:4px 4px 0 0;
+}
+.note-rank {
+  font-family:var(--f-display); font-size:2.4rem; line-height:1; color:var(--ink-faint);
+  font-variant-numeric:tabular-nums; padding-top:2px;
+}
+.note-cluster {
+  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--ink-faint); margin-bottom:5px;
+}
+.note-title h3 { font-size:1.42rem; line-height:1.22; letter-spacing:-.01em; }
+.note-verdict { margin-top:7px; color:var(--ink-soft); font-size:14.5px; max-width:62ch; }
+.note-score { text-align:right; }
+.score-val {
+  font-family:var(--f-mono); font-size:2rem; font-weight:500; line-height:1;
+  font-variant-numeric:tabular-nums; letter-spacing:-.03em;
+}
+.score-band {
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+  margin-top:7px; padding:3px 8px; border-radius:2px; display:inline-block;
+}
+.band-exceptional { background:var(--signal-wash); color:var(--signal); }
+.band-strong { background:var(--accent-wash); color:var(--accent); }
+
+.premise {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(184px,1fr));
+  gap:0; margin:0; border-bottom:1px solid var(--rule);
+}
+.pr { padding:13px 24px; border-right:1px solid var(--rule-soft); }
+.pr:last-child { border-right:0; }
+.pr dt {
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--ink-faint); margin-bottom:4px;
+}
+.pr dd { margin:0; font-size:13.5px; line-height:1.45; }
+
+.note-body { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); }
+.scorecard { padding:20px 24px; border-right:1px solid var(--rule); }
+.note-side { padding:20px 24px; display:flex; flex-direction:column; gap:20px; }
+h4 {
+  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--ink-faint); font-weight:500; margin-bottom:11px;
+}
+
+.bar-row {
+  display:grid; grid-template-columns:1fr 76px 40px 30px; gap:0 10px;
+  align-items:center; padding:7px 0; border-bottom:1px solid var(--rule-soft);
+}
+.bar-row:last-child { border-bottom:0; }
+.bar-label { font-size:13px; font-weight:450; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.tag {
+  font-family:var(--f-mono); font-size:8.5px; letter-spacing:.09em; text-transform:uppercase;
+  padding:1.5px 5px; border-radius:2px; font-weight:500;
+}
+.tag-binding { background:var(--signal-wash); color:var(--signal); }
+.tag-gate { border:1px solid var(--rule); color:var(--ink-faint); }
+.bar-track { height:7px; background:var(--rule-soft); border-radius:3px; overflow:hidden; }
+.bar-fill { height:100%; background:var(--accent); border-radius:0 3px 3px 0; }
+.is-binding .bar-fill { background:var(--signal); }
+.bar-num { font-family:var(--f-mono); font-size:13px; font-variant-numeric:tabular-nums; text-align:right; }
+.bar-num span { color:var(--ink-faint); font-size:11px; }
+.bar-wt { font-family:var(--f-mono); font-size:10.5px; color:var(--ink-faint); text-align:right; }
+.bar-why {
+  grid-column:1 / -1; font-size:12.8px; line-height:1.5; color:var(--ink-soft);
+  margin-top:4px; padding-right:6px;
+}
+
+.callout { border-radius:3px; padding:15px 17px; }
+.callout-num { background:var(--accent-wash); }
+.callout-num p { font-size:13.5px; line-height:1.55; }
+.callout-test { border:1px solid var(--rule); }
+.callout-test p { font-size:13.5px; line-height:1.55; }
+.figs {
+  list-style:none; margin:14px 0 0; padding:12px 0 0; border-top:1px solid var(--rule);
+  display:grid; grid-template-columns:repeat(2,1fr); gap:9px 16px;
+}
+.figs li { display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-size:12.5px; }
+.figs span { color:var(--ink-soft); }
+.figs b { font-family:var(--f-mono); font-variant-numeric:tabular-nums; font-weight:500; font-size:13.5px; }
+.pair { display:grid; grid-template-columns:repeat(auto-fit,minmax(184px,1fr)); gap:18px; }
+.pair p { font-size:13.5px; line-height:1.55; color:var(--ink-soft); }
+.outcome { margin-top:9px; display:flex; gap:9px; align-items:baseline; color:var(--ink-soft); }
+.oc {
+  font-family:var(--f-mono); font-size:9.5px; letter-spacing:.09em; text-transform:uppercase;
+  padding:2px 6px; border-radius:2px; flex:0 0 auto; font-weight:500;
+}
+.oc-pass { background:var(--accent-wash); color:var(--accent); }
+.oc-fail { background:var(--signal-wash); color:var(--signal); }
+
+.foot { margin-top:56px; padding-top:22px; border-top:1px solid var(--rule); }
+.foot p { font-size:13px; color:var(--ink-faint); max-width:var(--measure); }
+
+@media (max-width:880px) {
+  .note-body { grid-template-columns:1fr; }
+  .scorecard { border-right:0; border-bottom:1px solid var(--rule); }
+  .note-head { grid-template-columns:auto 1fr; }
+  .note-score { grid-column:2; text-align:left; display:flex; align-items:center; gap:12px; }
+  .score-band { margin-top:0; }
+  .pr { border-right:0; border-bottom:1px solid var(--rule-soft); }
+  .bar-row { grid-template-columns:1fr 60px 38px 28px; }
+}
+</style>
+
+<div class="wrap">
+<header class="mast">
+  <p class="eyebrow">Idea scoring · 104 evaluated · August 2026</p>
+  <h1>Ten Ideas Worth Testing</h1>
+  <p class="standfirst">One hundred business ideas, generated for founder-market fit and
+  scored against the ten-criterion rubric. These are the ten that survived. They are not
+  the ten most exciting — they are the ten where <strong>an unfair advantage, a reachable
+  buyer, and arithmetic that reaches £200k</strong> happen to coincide. Seven of them are
+  the same business model wearing different clothes, which is itself the finding.</p>
+  <div class="stats">
+    <div class="stat"><b>10 / 104</b><span>survived the rubric</span></div>
+    <div class="stat"><b>8 of 10</b><span>clear £200k in year one</span></div>
+    <div class="stat"><b>9 of 10</b><span>are recurring revenue</span></div>
+    <div class="stat"><b>£8k</b><span>most capital any needs</span></div>
+    <div class="stat"><b>3 mo</b><span>median to first revenue</span></div>
+  </div>
+</header>
+
+<section class="band">
+  <h2>How to read the scores</h2>
+  <div class="prose">
+    <p>Each idea is scored 0–5 on ten criteria, weighted to 100. Distribution and demand
+    carry the most weight (15 each) because they are the two things a founder cannot
+    outwork. Tailwind carries the least (5) because it is the easiest thing to feel
+    confident about and the least predictive at a one-year horizon.</p>
+    <p>Three criteria are <em>gates</em>: distribution or demand at 1 or below, or a
+    ceiling at 2 or below, caps the verdict at Marginal no matter how high the total.
+    A fatal flaw should not be averaged away. Fifty-nine of the hundred ideas hit a gate;
+    none of these ten did.</p>
+  </div>
+  <div class="keys">
+    <div class="key"><h4>Why nothing scores above 5 on demand</h4>
+      <p>Demand is scored on evidence, not on how good the argument is. Nobody has been
+      asked for money on any of these, so every one is capped at 2–3. That single
+      criterion is costing each idea 6–9 points right now, and two weeks of conversations
+      would move the whole table further than any more brainstorming.</p></div>
+    <div class="key"><h4>Why the mean is high</h4>
+      <p>The hundred averaged 64.4, at the top of the rubric's normal band. That is not
+      drift — the brief was to generate ideas <em>selected</em> for founder-market fit,
+      and it worked: fit averaged 4.39 out of 5. Against a random idea set the same
+      rubric runs considerably lower.</p></div>
+    <div class="key"><h4>What "best case" means</h4>
+      <p>Best case is everything going right, not everything going perfectly, measured as
+      revenue net of direct delivery costs within twelve months of starting. It is
+      derived from price × units × retention on every idea, never asserted.</p></div>
+  </div>
+</section>
+
+<section class="band">
+  <h2>Why these ten</h2>
+  <div class="prose">
+    <p>Across the full hundred, the binding constraint was almost never capability or
+    access. Founder-market fit averaged 4.39 and distribution 3.46 — both strong. What
+    failed was <strong>leverage</strong> (the most frequent binding constraint, 35 times)
+    and <strong>ceiling</strong> (59 ideas scored 2 or below). Those are the same problem
+    twice: expertise sells instantly by the hour and caps at the calendar, while anything
+    that scales starts from no audience and pays nothing for a year.</p>
+    <p>These ten escape that trap, and seven escape it the same way: <strong>institutional
+    subscription research at £1,000–£2,500 a month, needing only nine to seventeen
+    clients.</strong> That structure is the only one in the set where one unit of work
+    serves many buyers <em>and</em> the price is high enough that a fifty-person warm
+    network is large enough to fill it. The three exceptions — a fixed-fee diagnostic, an
+    annual benchmark, and a fractional role — earn their place differently, and each
+    entry says how.</p>
+    <p>Six of the ten sit at the built environment or energy, rather than in pure finance.
+    That is not an accident of generation: the rubric rewards ideas that need two of the
+    founder's domains at once, because that is where defensibility comes from.</p>
+  </div>
+</section>
+
+<section class="band">
+  <h2>The shortlist</h2>
+  <div class="tscroll">
+    <table>
+      <thead><tr>
+        <th scope="col"></th><th scope="col">Idea</th><th scope="col" class="n">Score</th>
+        <th scope="col">Binding constraint</th><th scope="col" class="n">Best case yr 1</th>
+        <th scope="col" class="n">Mo.</th>
+      </tr></thead>
+      <tbody><tr><td class="r">01</td><td><a href="#i023-retrofit-economics-research">Retrofit and EPC compliance economics research for property investors</a><span class="t-cluster">2 Built env x capital</span></td><td class="n"><div class="tbar"><div class="tbar-fill" style="width:86.4%"></div><span>86.4</span></div></td><td class="c">Distribution</td><td class="n mono">£210k</td><td class="n mono">3</td></tr><tr><td class="r">02</td><td><a href="#i010-transition-risk-research">Energy transition risk research for generalist funds</a><span class="t-cluster">5 Energy &amp; policy</span></td><td class="n"><div class="tbar"><div class="tbar-fill" style="width:81.8%"></div><span>81.8</span></div></td><td class="c">Demand intensity</td><td class="n mono">£206k</td><td class="n mono">3</td></tr><tr><td class="r">03</td><td><a href="#i058-china-cleantech-supply-research">China clean-energy supply chain research for Western investors</a><span class="t-cluster">5 Energy &amp; policy</span></td><td class="n"><div class="tbar"><div class="tbar-fill" style="width:81.6%"></div><span>81.6</span></div></td><td class="c">Demand intensity</td><td class="n mono">£196k</td><td class="n mono">5</td></tr><tr><td class="r">04</td><td><a href="#i021-reit-deep-dives">Listed property and REIT research with an architect&#x27;s eye</a><span class="t-cluster">2 Built env x capital</span></td><td class="n"><div class="tbar"><div class="tbar-fill" style="width:81.4%"></div><span>81.4</span></div></td><td class="c">Demand intensity</td><td class="n mono">£204k</td><td class="n mono">3</td></tr><tr><td class="r">05</td><td><a href="#i025-data-centre-property-research">Data centre and digital infrastructure property research</a><span class="t-cluster">2 Built env x capital</span></td><td class="n"><div class="tbar"><div class="tbar-fill" style="width:79.4%"></div><span>79.4</span></div></td><td class="c">Demand intensity</td><td class="n mono">£201k</td><td class="n mono">3</td></tr><tr><td class="r">06</td><td><a href="#i037-housebuilder-research-niche">Specialist UK housebuilder and building products research</a><span class="t-cluster">2 Built env x capital</span></td><td class="n"><div class="tbar"><div class="tbar-fill" style="width:78.4%"></div><span>78.4</span></div></td><td class="c">Secular tailwind</td><td class="n mono">£202k</td><td class="n mono">3</td></tr><tr><td class="r">07</td><td><a href="#i045-ai-readiness-diagnostic">Fixed-fee AI readiness diagnostic for professional firms</a><span class="t-cluster">3 AI adoption services</span></td><td class="n"><div class="tbar"><div class="tbar-fill" style="width:78.0%"></div><span>78.0</span></div></td><td class="c">Revenue structure</td><td class="n mono">£204k</td><td class="n mono">1</td></tr><tr><td class="r">08</td><td><a href="#i060-china-energy-policy-briefing">China energy policy interpretation briefing for Western investors</a><span class="t-cluster">5 Energy &amp; policy</span></td><td class="n"><div class="tbar"><div class="tbar-fill" style="width:78.0%"></div><span>78.0</span></div></td><td class="c">Demand intensity</td><td class="n mono">£204k</td><td class="n mono">5</td></tr><tr><td class="r">09</td><td><a href="#i002-ai-adoption-benchmark-am">Annual AI adoption benchmark report for UK asset managers</a><span class="t-cluster">3 AI adoption services</span></td><td class="n"><div class="tbar"><div class="tbar-fill" style="width:77.8%"></div><span>77.8</span></div></td><td class="c">Demand intensity</td><td class="n mono">£160k</td><td class="n mono">5</td></tr><tr><td class="r">10</td><td><a href="#i017-fractional-head-of-ai">Fractional Head of AI for professional services firms</a><span class="t-cluster">3 AI adoption services</span></td><td class="n"><div class="tbar"><div class="tbar-fill" style="width:77.8%"></div><span>77.8</span></div></td><td class="c">Leverage type</td><td class="n mono">£240k</td><td class="n mono">3</td></tr></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="band">
+  <h2>The ten in full</h2>
+  
+<article class="note" id="i023-retrofit-economics-research">
+  <header class="note-head">
+    <div class="note-rank">01</div>
+    <div class="note-title">
+      <p class="note-cluster">2 Built env x capital</p>
+      <h3>Retrofit and EPC compliance economics research for property investors</h3>
+      <p class="note-verdict">Regulatory deadline plus her exact two-domain combination; among the strongest in the whole set.</p>
+    </div>
+    <div class="note-score">
+      <div class="score-val">86.4</div>
+      <div class="score-band band-exceptional">Exceptional</div>
+    </div>
+  </header>
+
+  <dl class="premise"><div class="pr"><dt>Buyer</dt><dd>Real estate fund managers and institutional landlords</dd></div><div class="pr"><dt>Pain</dt><dd>MEES deadlines create capex obligations nobody has modelled properly</dd></div><div class="pr"><dt>Crude v1</dt><dd>A report modelling retrofit cost against rental value for one portfolio type</dd></div><div class="pr"><dt>Price</dt><dd>£1,000-2,000/month or £15k per portfolio study</dd></div><div class="pr"><dt>Channel</dt><dd>Her fund network plus architecture credibility</dd></div></dl>
+
+  <div class="note-body">
+    <section class="scorecard">
+      <h4>How it scored</h4>
+      <div class="bar-row is-binding"><div class="bar-label">Distribution<span class="tag tag-binding">binding</span><span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">20-50 warm fund contacts, and institutional landlords are a defined segment reachable through them.</p></div>
+<div class="bar-row"><div class="bar-label">Demand intensity<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">MEES is a hard legal deadline with capex attached - the closest thing to someone already paying for a worse substitute.</p></div>
+<div class="bar-row"><div class="bar-label">Founder-market fit</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w12</div><p class="bar-why">Requires construction cost judgement and investment analysis simultaneously. This is her intersection exactly.</p></div>
+<div class="bar-row"><div class="bar-label">Revenue structure</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">Annual subscription or repeated portfolio studies as deadlines approach.</p></div>
+<div class="bar-row"><div class="bar-label">Defensibility</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">A cost dataset built across portfolios compounds and is genuinely hard to reproduce.</p></div>
+<div class="bar-row"><div class="bar-label">Leverage</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">Core research serves all subscribers; portfolio studies are the bespoke layer.</p></div>
+<div class="bar-row"><div class="bar-label">Capital required</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w7</div><p class="bar-why">Cost data and modelling: under £2k.</p></div>
+<div class="bar-row"><div class="bar-label">Time to revenue</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">A first portfolio study from a warm contact in 1-3 months.</p></div>
+<div class="bar-row"><div class="bar-label">Tailwind</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w5</div><p class="bar-why">Regulatory obligation with hard dates and mandatory capex - the strongest form of tailwind.</p></div>
+<div class="bar-row"><div class="bar-label">Ceiling £200k<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">£15k x 14 portfolio studies = £210k, or a mixed subscription and study model reaching similar.</p></div>
+    </section>
+    <div class="note-side">
+      <section class="callout callout-num">
+        <h4>Ceiling arithmetic</h4>
+        <p>£15k x 14 portfolio studies = £210k, or £1,500/mo x 12 subscribers = £216k. Both are reachable numbers because the buyer has a legal deadline rather than a discretionary interest. Realistic year one: £90-130k.</p>
+        <ul class="figs">
+          <li><span>Best case yr 1</span><b>£210k</b></li>
+          <li><span>Realistic yr 1</span><b>£110k</b></li>
+          <li><span>Capital needed</span><b>£2k</b></li>
+          <li><span>To first revenue</span><b>3 mo</b></li>
+        </ul>
+      </section>
+      <section class="pair">
+        <div><h4>What carries it</h4><p>The only idea scoring 4 on demand, because the pain is a statutory obligation rather than a preference. Two-domain fit, compounding cost data, real recurring revenue.</p></div>
+        <div><h4>What could kill it</h4><p>Nothing structural. The risk is that big consultancies own the landlord relationships already.</p></div>
+      </section>
+      <section class="callout callout-test">
+        <h4>The two-week test</h4>
+        <p>Ask three real estate fund contacts what their MEES capex exposure is and whether anyone has modelled it.</p>
+        <p class="outcome"><span class="oc oc-pass">Pass</span>One cannot answer and asks her to scope a study.</p>
+        <p class="outcome"><span class="oc oc-fail">Fail</span>They say their asset managers or a Big Four firm already did it.</p>
+      </section>
+    </div>
+  </div>
+</article>
+
+<article class="note" id="i010-transition-risk-research">
+  <header class="note-head">
+    <div class="note-rank">02</div>
+    <div class="note-title">
+      <p class="note-cluster">5 Energy &amp; policy</p>
+      <h3>Energy transition risk research for generalist funds</h3>
+      <p class="note-verdict">Where her father&#x27;s network and her own job description genuinely meet; strongest tailwind in the set.</p>
+    </div>
+    <div class="note-score">
+      <div class="score-val">81.8</div>
+      <div class="score-band band-strong">Strong</div>
+    </div>
+  </header>
+
+  <dl class="premise"><div class="pr"><dt>Buyer</dt><dd>Generalist PMs holding industrials, utilities and materials</dd></div><div class="pr"><dt>Pain</dt><dd>Transition exposure is material and generalists cannot assess it</dd></div><div class="pr"><dt>Crude v1</dt><dd>A quarterly transition-risk note on ten held names</dd></div><div class="pr"><dt>Price</dt><dd>£800-1,500/month per fund</dd></div><div class="pr"><dt>Channel</dt><dd>Her fund network, informed by father&#x27;s policy contacts</dd></div></dl>
+
+  <div class="note-body">
+    <section class="scorecard">
+      <h4>How it scored</h4>
+      <div class="bar-row"><div class="bar-label">Distribution<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">20-50 warm generalist PMs - exactly her peer group - plus credibility from her father&#x27;s policy access.</p></div>
+<div class="bar-row is-binding"><div class="bar-label">Demand intensity<span class="tag tag-binding">binding</span><span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">Funds buy thematic research; transition exposure is a live board-level question, though untested at this price.</p></div>
+<div class="bar-row"><div class="bar-label">Founder-market fit</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w12</div><p class="bar-why">Generalist coverage plus genuine energy-policy access is a combination very few independents hold.</p></div>
+<div class="bar-row"><div class="bar-label">Revenue structure</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">Contracted monthly or annual subscription that renews once it enters a fund&#x27;s process.</p></div>
+<div class="bar-row"><div class="bar-label">Defensibility</div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">Policy access via her father is genuinely hard to replicate; the analysis itself is not.</p></div>
+<div class="bar-row"><div class="bar-label">Leverage</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">One note serves every subscriber; occasional bespoke questions are the only per-client cost.</p></div>
+<div class="bar-row"><div class="bar-label">Capital required</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w7</div><p class="bar-why">Data and a template. Under £2k.</p></div>
+<div class="bar-row"><div class="bar-label">Time to revenue</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">A first pilot subscriber from her network within 1-3 months.</p></div>
+<div class="bar-row"><div class="bar-label">Tailwind</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w5</div><p class="bar-why">Energy-transition mandates and disclosure obligations both carry budget and are still tightening.</p></div>
+<div class="bar-row"><div class="bar-label">Ceiling £200k<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">£1,200/mo x 15 funds = £216k on annual contracts.</p></div>
+    </section>
+    <div class="note-side">
+      <section class="callout callout-num">
+        <h4>Ceiling arithmetic</h4>
+        <p>£1,200/mo x 15 funds = £216k gross, less ~£10k data = £206k net - clears the bar if contracts are annual and billed upfront. Monthly billing halves year-one cash to ~£120k.</p>
+        <ul class="figs">
+          <li><span>Best case yr 1</span><b>£206k</b></li>
+          <li><span>Realistic yr 1</span><b>£95k</b></li>
+          <li><span>Capital needed</span><b>£2k</b></li>
+          <li><span>To first revenue</span><b>3 mo</b></li>
+        </ul>
+      </section>
+      <section class="pair">
+        <div><h4>What carries it</h4><p>Two of her assets at once, a genuinely budgeted tailwind, subscription economics, and only 15 clients needed.</p></div>
+        <div><h4>What could kill it</h4><p>Nothing structural. The risk is that generalist funds treat transition risk as an ESG checkbox rather than a research purchase.</p></div>
+      </section>
+      <section class="callout callout-test">
+        <h4>The two-week test</h4>
+        <p>Offer three generalist PMs a free transition note on names they hold, then quote £1,200/mo.</p>
+        <p class="outcome"><span class="oc oc-pass">Pass</span>One asks for a contract or takes it to a budget holder.</p>
+        <p class="outcome"><span class="oc oc-fail">Fail</span>They say their ESG team or data vendor covers it.</p>
+      </section>
+    </div>
+  </div>
+</article>
+
+<article class="note" id="i058-china-cleantech-supply-research">
+  <header class="note-head">
+    <div class="note-rank">03</div>
+    <div class="note-title">
+      <p class="note-cluster">5 Energy &amp; policy</p>
+      <h3>China clean-energy supply chain research for Western investors</h3>
+      <p class="note-verdict">Both networks load-bearing at once, with the strongest tailwind available. Best of the energy cluster.</p>
+    </div>
+    <div class="note-score">
+      <div class="score-val">81.6</div>
+      <div class="score-band band-strong">Strong</div>
+    </div>
+  </header>
+
+  <dl class="premise"><div class="pr"><dt>Buyer</dt><dd>Energy transition funds and industrial PMs</dd></div><div class="pr"><dt>Pain</dt><dd>Western investors cannot see inside Chinese solar, battery and EV supply chains</dd></div><div class="pr"><dt>Crude v1</dt><dd>One supply chain map with pricing and capacity</dd></div><div class="pr"><dt>Price</dt><dd>£1,500-2,500/month per fund</dd></div><div class="pr"><dt>Channel</dt><dd>Her fund network plus father&#x27;s China energy contacts</dd></div></dl>
+
+  <div class="note-body">
+    <section class="scorecard">
+      <h4>How it scored</h4>
+      <div class="bar-row"><div class="bar-label">Distribution<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">Fund side is her own warm network; the China side is her father&#x27;s, giving credibility rather than volume.</p></div>
+<div class="bar-row is-binding"><div class="bar-label">Demand intensity<span class="tag tag-binding">binding</span><span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">Transition funds buy supply chain research; nothing tested at this price yet.</p></div>
+<div class="bar-row"><div class="bar-label">Founder-market fit</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w12</div><p class="bar-why">Requires institutional analysis plus genuine China energy access - a combination almost nobody in London has.</p></div>
+<div class="bar-row"><div class="bar-label">Revenue structure</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">Annual institutional subscription.</p></div>
+<div class="bar-row"><div class="bar-label">Defensibility</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">The access is the moat and it is close to unreplicable for a Western competitor.</p></div>
+<div class="bar-row"><div class="bar-label">Leverage</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">One research product serves every subscriber.</p></div>
+<div class="bar-row"><div class="bar-label">Capital required</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w7</div><p class="bar-why">Translation, data and travel: £2-10k.</p></div>
+<div class="bar-row"><div class="bar-label">Time to revenue</div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">Building the China-side sourcing first: 3-6 months.</p></div>
+<div class="bar-row"><div class="bar-label">Tailwind</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w5</div><p class="bar-why">Energy transition capital plus supply chain anxiety - both structural and both budgeted.</p></div>
+<div class="bar-row"><div class="bar-label">Ceiling £200k<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">£2,000/mo x 9 funds = £216k, and transition funds pay these prices.</p></div>
+    </section>
+    <div class="note-side">
+      <section class="callout callout-num">
+        <h4>Ceiling arithmetic</h4>
+        <p>£2,000/mo x 9 funds = £216k gross, less ~£20k translation, data and travel = £196k net on annual contracts. Nine institutional subscribers is a reachable number given her fund network. Realistic year one: 4-5 = £96-120k.</p>
+        <ul class="figs">
+          <li><span>Best case yr 1</span><b>£196k</b></li>
+          <li><span>Realistic yr 1</span><b>£105k</b></li>
+          <li><span>Capital needed</span><b>£8k</b></li>
+          <li><span>To first revenue</span><b>5 mo</b></li>
+        </ul>
+      </section>
+      <section class="pair">
+        <div><h4>What carries it</h4><p>The single most defensible idea in the set: access that a Western competitor genuinely cannot buy, attached to the strongest tailwind and an institutional price point.</p></div>
+        <div><h4>What could kill it</h4><p>Nothing structural. Execution risk is real - geopolitical friction, data compliance, and dependence on her father&#x27;s goodwill.</p></div>
+      </section>
+      <section class="callout callout-test">
+        <h4>The two-week test</h4>
+        <p>Ask three transition funds what they cannot see in Chinese supply chains, and ask her father whether two contacts would speak on the record.</p>
+        <p class="outcome"><span class="oc oc-pass">Pass</span>A fund names a specific blind spot and a contact agrees to talk.</p>
+        <p class="outcome"><span class="oc oc-fail">Fail</span>Funds say Wood Mackenzie or BNEF covers it adequately.</p>
+      </section>
+    </div>
+  </div>
+</article>
+
+<article class="note" id="i021-reit-deep-dives">
+  <header class="note-head">
+    <div class="note-rank">04</div>
+    <div class="note-title">
+      <p class="note-cluster">2 Built env x capital</p>
+      <h3>Listed property and REIT research with an architect&#x27;s eye</h3>
+      <p class="note-verdict">The clearest expression of her rare combination, sold to a buyer she can already reach.</p>
+    </div>
+    <div class="note-score">
+      <div class="score-val">81.4</div>
+      <div class="score-band band-strong">Strong</div>
+    </div>
+  </header>
+
+  <dl class="premise"><div class="pr"><dt>Buyer</dt><dd>Real estate and generalist PMs holding listed property</dd></div><div class="pr"><dt>Pain</dt><dd>Property analysts model cash flows without judging the assets themselves</dd></div><div class="pr"><dt>Crude v1</dt><dd>One REIT initiation assessing scheme quality alongside the numbers</dd></div><div class="pr"><dt>Price</dt><dd>£1,000-1,500/month per fund</dd></div><div class="pr"><dt>Channel</dt><dd>Her fund network</dd></div></dl>
+
+  <div class="note-body">
+    <section class="scorecard">
+      <h4>How it scored</h4>
+      <div class="bar-row"><div class="bar-label">Distribution<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">20-50 warm PMs, and real estate desks are a defined, findable segment within them.</p></div>
+<div class="bar-row is-binding"><div class="bar-label">Demand intensity<span class="tag tag-binding">binding</span><span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">Property research is a paid category; her specific angle is untested.</p></div>
+<div class="bar-row"><div class="bar-label">Founder-market fit</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w12</div><p class="bar-why">Requires both halves - institutional analysis and genuine architectural judgement. Almost nobody else has both.</p></div>
+<div class="bar-row"><div class="bar-label">Revenue structure</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">Annual research subscription that embeds into a desk&#x27;s process.</p></div>
+<div class="bar-row"><div class="bar-label">Defensibility</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">The combination is the moat, and a back catalogue of assessed assets compounds.</p></div>
+<div class="bar-row"><div class="bar-label">Leverage</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">One note serves every subscriber.</p></div>
+<div class="bar-row"><div class="bar-label">Capital required</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w7</div><p class="bar-why">Property data and site visits: under £2k to start.</p></div>
+<div class="bar-row"><div class="bar-label">Time to revenue</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">A pilot subscriber from her network in 1-3 months.</p></div>
+<div class="bar-row"><div class="bar-label">Tailwind</div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w5</div><p class="bar-why">Real but slow; listed property is out of favour, offsetting the retrofit and repricing story.</p></div>
+<div class="bar-row"><div class="bar-label">Ceiling £200k<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">£1,200/mo x 15 funds = £216k on annual contracts.</p></div>
+    </section>
+    <div class="note-side">
+      <section class="callout callout-num">
+        <h4>Ceiling arithmetic</h4>
+        <p>£1,200/mo x 15 funds = £216k gross less ~£12k data = £204k net, on annual upfront contracts. Fifteen real estate desks is a defined universe she can name. Monthly billing drops year one to ~£115k.</p>
+        <ul class="figs">
+          <li><span>Best case yr 1</span><b>£204k</b></li>
+          <li><span>Realistic yr 1</span><b>£100k</b></li>
+          <li><span>Capital needed</span><b>£2k</b></li>
+          <li><span>To first revenue</span><b>3 mo</b></li>
+        </ul>
+      </section>
+      <section class="pair">
+        <div><h4>What carries it</h4><p>The one idea where her two careers are both load-bearing, sold at institutional prices to a warm buyer.</p></div>
+        <div><h4>What could kill it</h4><p>Nothing structural. The risk is that PMs treat asset quality as unquantifiable and refuse to pay for judgement.</p></div>
+      </section>
+      <section class="callout callout-test">
+        <h4>The two-week test</h4>
+        <p>Send two real estate PMs a free assessment of a REIT they hold, then quote £1,200/mo.</p>
+        <p class="outcome"><span class="oc oc-pass">Pass</span>One says it changed their view, or asks about a contract.</p>
+        <p class="outcome"><span class="oc oc-fail">Fail</span>They say it is interesting but not investable.</p>
+      </section>
+    </div>
+  </div>
+</article>
+
+<article class="note" id="i025-data-centre-property-research">
+  <header class="note-head">
+    <div class="note-rank">05</div>
+    <div class="note-title">
+      <p class="note-cluster">2 Built env x capital</p>
+      <h3>Data centre and digital infrastructure property research</h3>
+      <p class="note-verdict">Hottest real assets theme, needs exactly her cross-domain lens, and infra funds pay well.</p>
+    </div>
+    <div class="note-score">
+      <div class="score-val">79.4</div>
+      <div class="score-band band-strong">Strong</div>
+    </div>
+  </header>
+
+  <dl class="premise"><div class="pr"><dt>Buyer</dt><dd>Infrastructure and real assets funds</dd></div><div class="pr"><dt>Pain</dt><dd>Data centre economics blend construction, power and tech in ways generalists cannot assess</dd></div><div class="pr"><dt>Crude v1</dt><dd>A primer on UK/EU data centre development economics</dd></div><div class="pr"><dt>Price</dt><dd>£1,500-2,500/month per fund</dd></div><div class="pr"><dt>Channel</dt><dd>Her fund network</dd></div></dl>
+
+  <div class="note-body">
+    <section class="scorecard">
+      <h4>How it scored</h4>
+      <div class="bar-row"><div class="bar-label">Distribution<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">Infrastructure funds are reachable through her network, though they are adjacent to her direct peer group.</p></div>
+<div class="bar-row is-binding"><div class="bar-label">Demand intensity<span class="tag tag-binding">binding</span><span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">Infra funds spend heavily on thematic research; nothing tested at this price.</p></div>
+<div class="bar-row"><div class="bar-label">Founder-market fit</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w12</div><p class="bar-why">Construction economics plus power plus investment analysis - three of her four assets, missing only direct data centre experience.</p></div>
+<div class="bar-row"><div class="bar-label">Revenue structure</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">Annual subscription at institutional prices.</p></div>
+<div class="bar-row"><div class="bar-label">Defensibility</div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">Specialist knowledge accumulates, though specialist consultancies already exist here.</p></div>
+<div class="bar-row"><div class="bar-label">Leverage</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">One research product serves every subscriber.</p></div>
+<div class="bar-row"><div class="bar-label">Capital required</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w7</div><p class="bar-why">Data and site access: under £2k.</p></div>
+<div class="bar-row"><div class="bar-label">Time to revenue</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">A pilot from her network in 1-3 months.</p></div>
+<div class="bar-row"><div class="bar-label">Tailwind</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w5</div><p class="bar-why">AI-driven data centre buildout and the power constraint behind it are the strongest infrastructure themes of the decade.</p></div>
+<div class="bar-row"><div class="bar-label">Ceiling £200k<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">£2,000/mo x 9 funds = £216k, and infra funds pay these prices routinely.</p></div>
+    </section>
+    <div class="note-side">
+      <section class="callout callout-num">
+        <h4>Ceiling arithmetic</h4>
+        <p>£2,000/mo x 9 funds = £216k gross on annual contracts, less ~£15k data = £201k net. Only nine clients needed because infra funds pay institutional research prices. Realistic year one: 4-5 = £96-120k.</p>
+        <ul class="figs">
+          <li><span>Best case yr 1</span><b>£201k</b></li>
+          <li><span>Realistic yr 1</span><b>£110k</b></li>
+          <li><span>Capital needed</span><b>£2k</b></li>
+          <li><span>To first revenue</span><b>3 mo</b></li>
+        </ul>
+      </section>
+      <section class="pair">
+        <div><h4>What carries it</h4><p>Only nine customers needed, the strongest infrastructure tailwind available, and a genuine cross-domain angle.</p></div>
+        <div><h4>What could kill it</h4><p>Nothing structural, but she would be entering a specialist field where established consultancies already sell to these funds.</p></div>
+      </section>
+      <section class="callout callout-test">
+        <h4>The two-week test</h4>
+        <p>Ask two infra fund contacts what they read on data centres and what it costs.</p>
+        <p class="outcome"><span class="oc oc-pass">Pass</span>They name a gap around construction and power economics.</p>
+        <p class="outcome"><span class="oc oc-fail">Fail</span>They name a specialist provider they already pay.</p>
+      </section>
+    </div>
+  </div>
+</article>
+
+<article class="note" id="i037-housebuilder-research-niche">
+  <header class="note-head">
+    <div class="note-rank">06</div>
+    <div class="note-title">
+      <p class="note-cluster">2 Built env x capital</p>
+      <h3>Specialist UK housebuilder and building products research</h3>
+      <p class="note-verdict">Narrow but genuinely differentiated; the sector is small enough that client count is the constraint.</p>
+    </div>
+    <div class="note-score">
+      <div class="score-val">78.4</div>
+      <div class="score-band band-strong">Strong</div>
+    </div>
+  </header>
+
+  <dl class="premise"><div class="pr"><dt>Buyer</dt><dd>Generalist and sector PMs holding housebuilders</dd></div><div class="pr"><dt>Pain</dt><dd>Housebuilder analysis requires understanding what actually gets built and what it costs</dd></div><div class="pr"><dt>Crude v1</dt><dd>An initiation on two housebuilders with a construction-cost lens</dd></div><div class="pr"><dt>Price</dt><dd>£1,200/month per fund</dd></div><div class="pr"><dt>Channel</dt><dd>Her fund network</dd></div></dl>
+
+  <div class="note-body">
+    <section class="scorecard">
+      <h4>How it scored</h4>
+      <div class="bar-row"><div class="bar-label">Distribution<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">Direct to warm PMs, and holders of UK housebuilders are an identifiable list.</p></div>
+<div class="bar-row"><div class="bar-label">Demand intensity<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">Sector research is bought, though UK housebuilders are covered by the remaining sell side.</p></div>
+<div class="bar-row"><div class="bar-label">Founder-market fit</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w12</div><p class="bar-why">Knowing what a house actually costs to build is a genuine edge over a pure financial analyst.</p></div>
+<div class="bar-row"><div class="bar-label">Revenue structure</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">Annual subscription.</p></div>
+<div class="bar-row"><div class="bar-label">Defensibility</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">The construction-cost angle is hard to copy without her background.</p></div>
+<div class="bar-row"><div class="bar-label">Leverage</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">One note serves every subscriber.</p></div>
+<div class="bar-row"><div class="bar-label">Capital required</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w7</div><p class="bar-why">Under £2k.</p></div>
+<div class="bar-row"><div class="bar-label">Time to revenue</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">1-3 months to a pilot subscriber.</p></div>
+<div class="bar-row is-binding"><div class="bar-label">Tailwind<span class="tag tag-binding">binding</span></div><div class="bar-track"><div class="bar-fill" style="width:40%"></div></div><div class="bar-num"><b>2</b><span>/5</span></div><div class="bar-wt">w5</div><p class="bar-why">UK housebuilding is rate and planning constrained; volumes are weak.</p></div>
+<div class="bar-row"><div class="bar-label">Ceiling £200k<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">£1,200/mo x 14 funds = £202k, but the number of funds with meaningful UK housebuilder exposure is limited.</p></div>
+    </section>
+    <div class="note-side">
+      <section class="callout callout-num">
+        <h4>Ceiling arithmetic</h4>
+        <p>£1,200/mo x 14 funds = £202k. The universe of funds with enough UK housebuilder exposure to pay £14k/yr for specialist coverage is perhaps 25-40 firms. Realistic: 5-6 = £72-86k.</p>
+        <ul class="figs">
+          <li><span>Best case yr 1</span><b>£202k</b></li>
+          <li><span>Realistic yr 1</span><b>£78k</b></li>
+          <li><span>Capital needed</span><b>£2k</b></li>
+          <li><span>To first revenue</span><b>3 mo</b></li>
+        </ul>
+      </section>
+      <section class="pair">
+        <div><h4>What carries it</h4><p>A defensible angle no financial analyst can replicate, sold to a warm and identifiable list.</p></div>
+        <div><h4>What could kill it</h4><p>A small buyer universe in a sector currently out of favour.</p></div>
+      </section>
+      <section class="callout callout-test">
+        <h4>The two-week test</h4>
+        <p>Ask four PMs holding housebuilders what they wish they understood better.</p>
+        <p class="outcome"><span class="oc oc-pass">Pass</span>They name construction cost or land pipeline reality.</p>
+        <p class="outcome"><span class="oc oc-fail">Fail</span>They say the sell side covers it adequately.</p>
+      </section>
+    </div>
+  </div>
+</article>
+
+<article class="note" id="i045-ai-readiness-diagnostic">
+  <header class="note-head">
+    <div class="note-rank">07</div>
+    <div class="note-title">
+      <p class="note-cluster">3 AI adoption services</p>
+      <h3>Fixed-fee AI readiness diagnostic for professional firms</h3>
+      <p class="note-verdict">A well-shaped productised entry point that reliably leads to larger work.</p>
+    </div>
+    <div class="note-score">
+      <div class="score-val">78.0</div>
+      <div class="score-band band-strong">Strong</div>
+    </div>
+  </header>
+
+  <dl class="premise"><div class="pr"><dt>Buyer</dt><dd>Managing partners and COOs</dd></div><div class="pr"><dt>Pain</dt><dd>They do not know where to start and will not commit to a big programme</dd></div><div class="pr"><dt>Crude v1</dt><dd>A two-week diagnostic with a scored report</dd></div><div class="pr"><dt>Price</dt><dd>£7-10k fixed fee</dd></div><div class="pr"><dt>Channel</dt><dd>Both networks</dd></div></dl>
+
+  <div class="note-body">
+    <section class="scorecard">
+      <h4>How it scored</h4>
+      <div class="bar-row"><div class="bar-label">Distribution<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">50+ reachable firms across finance and architecture; a fixed-fee diagnostic is an easy first yes.</p></div>
+<div class="bar-row"><div class="bar-label">Demand intensity<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">Firms are buying diagnostics now, though this specific offer is untested.</p></div>
+<div class="bar-row"><div class="bar-label">Founder-market fit</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w12</div><p class="bar-why">Her actual former remit, productised into a fixed scope.</p></div>
+<div class="bar-row is-binding"><div class="bar-label">Revenue structure<span class="tag tag-binding">binding</span></div><div class="bar-track"><div class="bar-fill" style="width:40%"></div></div><div class="bar-num"><b>2</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">One-off, but designed to lead to a retainer.</p></div>
+<div class="bar-row"><div class="bar-label">Defensibility</div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">The scoring framework accumulates comparative data across firms.</p></div>
+<div class="bar-row"><div class="bar-label">Leverage</div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">A fixed framework applied repeatedly - genuinely productised rather than bespoke.</p></div>
+<div class="bar-row"><div class="bar-label">Capital required</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w7</div><p class="bar-why">Nothing.</p></div>
+<div class="bar-row"><div class="bar-label">Time to revenue</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">Sellable within weeks; two-week delivery.</p></div>
+<div class="bar-row"><div class="bar-label">Tailwind</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w5</div><p class="bar-why">Peak urgency with budget attached.</p></div>
+<div class="bar-row"><div class="bar-label">Ceiling £200k<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">£8.5k x 24 diagnostics = £204k, at two weeks each which exceeds a part-time year.</p></div>
+    </section>
+    <div class="note-side">
+      <section class="callout callout-num">
+        <h4>Ceiling arithmetic</h4>
+        <p>£8.5k x 24 diagnostics = £204k. Twenty-four two-week diagnostics is more than a full year, so the honest cap is 12-15 = £102-128k unless it converts into retainers, which is the actual design intent.</p>
+        <ul class="figs">
+          <li><span>Best case yr 1</span><b>£204k</b></li>
+          <li><span>Realistic yr 1</span><b>£95k</b></li>
+          <li><span>Capital needed</span><b>£1k</b></li>
+          <li><span>To first revenue</span><b>1 mo</b></li>
+        </ul>
+      </section>
+      <section class="pair">
+        <div><h4>What carries it</h4><p>The easiest first sale in the AI cluster, fixed scope, fast delivery, and a natural bridge to i017&#x27;s retainers.</p></div>
+        <div><h4>What could kill it</h4><p>One-off by nature. Its value is as a funnel rather than as the business itself.</p></div>
+      </section>
+      <section class="callout callout-test">
+        <h4>The two-week test</h4>
+        <p>Offer the diagnostic at £7.5k to four firms across both networks.</p>
+        <p class="outcome"><span class="oc oc-pass">Pass</span>Two book, and at least one asks what comes next.</p>
+        <p class="outcome"><span class="oc oc-fail">Fail</span>They want the findings without paying for the diagnosis.</p>
+      </section>
+    </div>
+  </div>
+</article>
+
+<article class="note" id="i060-china-energy-policy-briefing">
+  <header class="note-head">
+    <div class="note-rank">08</div>
+    <div class="note-title">
+      <p class="note-cluster">5 Energy &amp; policy</p>
+      <h3>China energy policy interpretation briefing for Western investors</h3>
+      <p class="note-verdict">Direct use of her father&#x27;s rarest asset, with genuine scarcity value and subscription economics.</p>
+    </div>
+    <div class="note-score">
+      <div class="score-val">78.0</div>
+      <div class="score-band band-strong">Strong</div>
+    </div>
+  </header>
+
+  <dl class="premise"><div class="pr"><dt>Buyer</dt><dd>Energy and macro PMs, policy teams at funds</dd></div><div class="pr"><dt>Pain</dt><dd>Chinese policy documents are published in Chinese and misread in translation</dd></div><div class="pr"><dt>Crude v1</dt><dd>A monthly interpreted policy briefing</dd></div><div class="pr"><dt>Price</dt><dd>£1,000/month per fund</dd></div><div class="pr"><dt>Channel</dt><dd>Fund network plus father&#x27;s policy contacts</dd></div></dl>
+
+  <div class="note-body">
+    <section class="scorecard">
+      <h4>How it scored</h4>
+      <div class="bar-row"><div class="bar-label">Distribution<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">Warm fund contacts; the policy access itself does not add distribution, only credibility.</p></div>
+<div class="bar-row is-binding"><div class="bar-label">Demand intensity<span class="tag tag-binding">binding</span><span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">Funds buy China macro and policy research today from several providers.</p></div>
+<div class="bar-row"><div class="bar-label">Founder-market fit</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w12</div><p class="bar-why">Language plus policy access plus investment framing; she is not herself a policy specialist.</p></div>
+<div class="bar-row"><div class="bar-label">Revenue structure</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">Monthly subscription on annual terms.</p></div>
+<div class="bar-row"><div class="bar-label">Defensibility</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">Interpretation informed by people inside the policy process is hard to replicate.</p></div>
+<div class="bar-row"><div class="bar-label">Leverage</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">One briefing serves every subscriber.</p></div>
+<div class="bar-row"><div class="bar-label">Capital required</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w7</div><p class="bar-why">Under £2k.</p></div>
+<div class="bar-row"><div class="bar-label">Time to revenue</div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">3-6 months to establish a publication rhythm and credibility.</p></div>
+<div class="bar-row"><div class="bar-label">Tailwind</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w5</div><p class="bar-why">China energy policy drives global transition markets, though China exposure is politically fraught for some allocators.</p></div>
+<div class="bar-row"><div class="bar-label">Ceiling £200k<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">£1,000/mo x 17 funds = £204k, requiring seventeen institutional subscribers.</p></div>
+    </section>
+    <div class="note-side">
+      <section class="callout callout-num">
+        <h4>Ceiling arithmetic</h4>
+        <p>£1,000/mo x 17 funds = £204k. Seventeen subscribers is more than her warm network typically converts; realistic is 6-8 = £72-96k.</p>
+        <ul class="figs">
+          <li><span>Best case yr 1</span><b>£204k</b></li>
+          <li><span>Realistic yr 1</span><b>£80k</b></li>
+          <li><span>Capital needed</span><b>£2k</b></li>
+          <li><span>To first revenue</span><b>5 mo</b></li>
+        </ul>
+      </section>
+      <section class="pair">
+        <div><h4>What carries it</h4><p>Uses the scarcest thing in her whole network - genuine proximity to Chinese energy policy - in a subscription format.</p></div>
+        <div><h4>What could kill it</h4><p>Subscriber count. £1,000/month needs seventeen funds, beyond typical conversion from a 50-person network.</p></div>
+      </section>
+      <section class="callout callout-test">
+        <h4>The two-week test</h4>
+        <p>Send two energy PMs an interpreted briefing on a recent policy document.</p>
+        <p class="outcome"><span class="oc oc-pass">Pass</span>One says it corrected their understanding and asks about pricing.</p>
+        <p class="outcome"><span class="oc oc-fail">Fail</span>They say their China analyst covers it.</p>
+      </section>
+    </div>
+  </div>
+</article>
+
+<article class="note" id="i002-ai-adoption-benchmark-am">
+  <header class="note-head">
+    <div class="note-rank">09</div>
+    <div class="note-title">
+      <p class="note-cluster">3 AI adoption services</p>
+      <h3>Annual AI adoption benchmark report for UK asset managers</h3>
+      <p class="note-verdict">Rare combination: high fit, recurring, defensible via accumulating data, and the buyer has budget.</p>
+    </div>
+    <div class="note-score">
+      <div class="score-val">77.8</div>
+      <div class="score-band band-strong">Strong</div>
+    </div>
+  </header>
+
+  <dl class="premise"><div class="pr"><dt>Buyer</dt><dd>COOs and heads of research at asset managers</dd></div><div class="pr"><dt>Pain</dt><dd>Nobody knows if their AI rollout is ahead or behind peers</dd></div><div class="pr"><dt>Crude v1</dt><dd>Survey 30 firms, publish a paid 40-page benchmark</dd></div><div class="pr"><dt>Price</dt><dd>£2.5-5k per firm licence</dd></div><div class="pr"><dt>Channel</dt><dd>Her AI-adoption reputation plus fund network</dd></div></dl>
+
+  <div class="note-body">
+    <section class="scorecard">
+      <h4>How it scored</h4>
+      <div class="bar-row"><div class="bar-label">Distribution<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">20-50 warm firms via her own network and the AI-adoption remit that made her visible.</p></div>
+<div class="bar-row is-binding"><div class="bar-label">Demand intensity<span class="tag tag-binding">binding</span><span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">Firms buy benchmark reports routinely, but nothing tested here yet.</p></div>
+<div class="bar-row"><div class="bar-label">Founder-market fit</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w12</div><p class="bar-why">She led exactly this inside a firm - both the finance and the AI-change-management halves.</p></div>
+<div class="bar-row"><div class="bar-label">Revenue structure</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">Annual licence that renews by habit once it becomes the reference point.</p></div>
+<div class="bar-row"><div class="bar-label">Defensibility</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">The response dataset compounds; year three is impossible for a new entrant to replicate.</p></div>
+<div class="bar-row"><div class="bar-label">Leverage</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">One report sells to every firm; survey admin is the only per-customer cost.</p></div>
+<div class="bar-row"><div class="bar-label">Capital required</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w7</div><p class="bar-why">Survey tooling and design. Under £2k.</p></div>
+<div class="bar-row"><div class="bar-label">Time to revenue</div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">Needs a survey round before publication: 4-6 months.</p></div>
+<div class="bar-row"><div class="bar-label">Tailwind</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w5</div><p class="bar-why">AI adoption spend in professional services is the strongest budgeted trend available to her.</p></div>
+<div class="bar-row"><div class="bar-label">Ceiling £200k<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">£4k x 40 licences = £160k; reaching 40 buyers in year one is optimistic.</p></div>
+    </section>
+    <div class="note-side">
+      <section class="callout callout-num">
+        <h4>Ceiling arithmetic</h4>
+        <p>£4k x 40 firm licences = £160k. UK asset management has enough firms, but 40 paying in year one from a standing start is the stretch case; 15-20 is realistic = £60-80k. Year two with an established benchmark clears £200k.</p>
+        <ul class="figs">
+          <li><span>Best case yr 1</span><b>£160k</b></li>
+          <li><span>Realistic yr 1</span><b>£70k</b></li>
+          <li><span>Capital needed</span><b>£2k</b></li>
+          <li><span>To first revenue</span><b>5 mo</b></li>
+        </ul>
+      </section>
+      <section class="pair">
+        <div><h4>What carries it</h4><p>The only idea in the set where a compounding proprietary dataset sits under a high-fit, high-tailwind product.</p></div>
+        <div><h4>What could kill it</h4><p>Nothing structural. Year one is a chicken-and-egg problem: the report needs respondents before it has buyers.</p></div>
+      </section>
+      <section class="callout callout-test">
+        <h4>The two-week test</h4>
+        <p>Ask ten heads of research whether they would answer a 20-minute survey AND pay £4k for the aggregate.</p>
+        <p class="outcome"><span class="oc oc-pass">Pass</span>Six agree to respond and two say they would buy.</p>
+        <p class="outcome"><span class="oc oc-fail">Fail</span>They will answer but not pay - which makes it marketing, not a business.</p>
+      </section>
+    </div>
+  </div>
+</article>
+
+<article class="note" id="i017-fractional-head-of-ai">
+  <header class="note-head">
+    <div class="note-rank">10</div>
+    <div class="note-title">
+      <p class="note-cluster">3 AI adoption services</p>
+      <h3>Fractional Head of AI for professional services firms</h3>
+      <p class="note-verdict">The best revenue structure of any consulting shape she can sell, and only four clients are needed.</p>
+    </div>
+    <div class="note-score">
+      <div class="score-val">77.8</div>
+      <div class="score-band band-strong">Strong</div>
+    </div>
+  </header>
+
+  <dl class="premise"><div class="pr"><dt>Buyer</dt><dd>Managing partners at 20-200 person finance, law and design firms</dd></div><div class="pr"><dt>Pain</dt><dd>They know they need AI leadership and cannot justify a full-time hire</dd></div><div class="pr"><dt>Crude v1</dt><dd>Two days a month with one firm</dd></div><div class="pr"><dt>Price</dt><dd>£4-6k/month retainer</dd></div><div class="pr"><dt>Channel</dt><dd>Her network across finance and architecture</dd></div></dl>
+
+  <div class="note-body">
+    <section class="scorecard">
+      <h4>How it scored</h4>
+      <div class="bar-row"><div class="bar-label">Distribution<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">Warm across two professions at once - funds via her career and practices via architecture.</p></div>
+<div class="bar-row"><div class="bar-label">Demand intensity<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w15</div><p class="bar-why">Fractional executive roles are an established purchase; this specific offer is untested.</p></div>
+<div class="bar-row"><div class="bar-label">Founder-market fit</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w12</div><p class="bar-why">She has held the actual remit inside a demanding professional firm, which almost no consultant has.</p></div>
+<div class="bar-row"><div class="bar-label">Revenue structure</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">Monthly retainers that renew by default while the programme runs.</p></div>
+<div class="bar-row"><div class="bar-label">Defensibility</div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><div class="bar-num"><b>3</b><span>/5</span></div><div class="bar-wt">w8</div><p class="bar-why">Relationship and embedded knowledge make her hard to displace mid-programme.</p></div>
+<div class="bar-row is-binding"><div class="bar-label">Leverage<span class="tag tag-binding">binding</span></div><div class="bar-track"><div class="bar-fill" style="width:40%"></div></div><div class="bar-num"><b>2</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">Her days are the product; four clients is roughly her available capacity.</p></div>
+<div class="bar-row"><div class="bar-label">Capital required</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w7</div><p class="bar-why">Nothing.</p></div>
+<div class="bar-row"><div class="bar-label">Time to revenue</div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">A warm conversation to a retainer in 1-3 months.</p></div>
+<div class="bar-row"><div class="bar-label">Tailwind</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-num"><b>5</b><span>/5</span></div><div class="bar-wt">w5</div><p class="bar-why">AI adoption spend in professional services, with budget already moving.</p></div>
+<div class="bar-row"><div class="bar-label">Ceiling £200k<span class="tag tag-gate">gate</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div><div class="bar-num"><b>4</b><span>/5</span></div><div class="bar-wt">w10</div><p class="bar-why">£5k/mo x 4 clients = £240k, and four retainers is genuinely reachable.</p></div>
+    </section>
+    <div class="note-side">
+      <section class="callout callout-num">
+        <h4>Ceiling arithmetic</h4>
+        <p>£5k/mo x 4 concurrent retainers = £240k/yr, negligible direct cost. Four clients at two days each is 8 days a month - demanding but feasible. Ramping in over the year: 2-3 clients = £120-180k realistic.</p>
+        <ul class="figs">
+          <li><span>Best case yr 1</span><b>£240k</b></li>
+          <li><span>Realistic yr 1</span><b>£140k</b></li>
+          <li><span>Capital needed</span><b>£1k</b></li>
+          <li><span>To first revenue</span><b>3 mo</b></li>
+        </ul>
+      </section>
+      <section class="pair">
+        <div><h4>What carries it</h4><p>Only four customers needed to clear the target, recurring monthly revenue, and the rarest thing she owns as the product.</p></div>
+        <div><h4>What could kill it</h4><p>Leverage is 2 - this trades her calendar for money, with no asset accumulating underneath it.</p></div>
+      </section>
+      <section class="callout callout-test">
+        <h4>The two-week test</h4>
+        <p>Offer a three-month fractional arrangement at £4k/mo to two firms in her network.</p>
+        <p class="outcome"><span class="oc oc-pass">Pass</span>One signs a three-month trial.</p>
+        <p class="outcome"><span class="oc oc-fail">Fail</span>They want a project, not a person - which points at idea i006 instead.</p>
+      </section>
+    </div>
+  </div>
+</article>
+</section>
+
+<section class="band">
+  <h2>Where to start</h2>
+  <div class="prose">
+    <p><strong>Run one test, not ten.</strong> Every idea here is capped by the same
+    missing thing — evidence that someone will pay. The highest-value fortnight available
+    is the retrofit test: ask three real-estate fund contacts what their MEES capex
+    exposure is and whether anyone has modelled it. It costs nothing, and it moves the
+    only idea in a hundred that scored Exceptional.</p>
+    <p><strong>Then note what the shortlist has in common.</strong> If institutional
+    subscription research is the shape that works, the choice between these ideas is
+    mostly a choice of subject — and the subject can follow whichever conversation goes
+    best. Testing three subjects with the same offer is cheaper than committing to one.</p>
+    <p><strong>Two things worth arguing with.</strong> The prices are assumptions: if
+    £1,200 a month is wrong for a fund's research budget, most of these ceilings move
+    with it. And the tailwind scores penalise anything relying on independent research
+    being paid for in cash, because the FCA's 2024–25 re-bundling rules route research
+    spend back through brokers who execute. If that reading is wrong, several of these
+    scores rise.</p>
+  </div>
+  <div class="foot">
+    <p>Scored against the business-idea-scoring rubric, August 2026. Every figure on this
+    page is generated from the scoring log, where all 104 ideas, their full criterion
+    reasoning, and the live weighting model can be inspected and changed.</p>
+  </div>
+</section>
+</div>
