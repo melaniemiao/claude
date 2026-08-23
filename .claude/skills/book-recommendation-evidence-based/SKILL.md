@@ -1,5 +1,5 @@
 ---
-name: book-recommendation
+name: book-recommendation-evidence-based
 description: Recommends books with an explicit evidence audit — always ten very popular books whose science is rigorous and has survived decades of replication, ranked from most to least scientifically robust, plus five hugely popular books that are not science at all. Every entry gets a short synopsis and a background on the author. Use this whenever someone asks for book recommendations, a reading list, "what should I read", the best books on a topic, science books, self-improvement or non-fiction suggestions, or asks whether a specific popular book is actually backed by evidence — even when they don't say the word "science", and even when they only want books on one narrow subject like sleep, habits, nutrition, or decision-making.
 ---
 
